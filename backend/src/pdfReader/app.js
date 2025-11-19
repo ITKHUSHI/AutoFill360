@@ -9,7 +9,9 @@ const applicationForm = async (data) => {
     }
   const templatePdfPath = "./src/templates/application.pdf"; // multi-page template
   const fontPath = "./src/fonts/NotoSans_ExtraCondensed-Regular.ttf";
-
+  //  use this font for tick
+const fontBytes1 = fs.readFileSync(
+  "./node_modules/dejavu-fonts-ttf/ttf/DejaVuSans.ttf");  
   // Load template + font
   const existingPdfBytes = fs.readFileSync(templatePdfPath);
   const fontBytes = fs.readFileSync(fontPath);
@@ -18,6 +20,7 @@ const applicationForm = async (data) => {
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes);
+  const tickFont = await pdfDoc.embedFont(fontBytes1);
 
   const textColor = rgb(0, 0, 0);
 
@@ -104,6 +107,8 @@ const applicationForm = async (data) => {
       font,
       color: textColor,
     });
+    page3.drawText( data.insurance?"✔":"",{x:70,y:550,size:fontSize,font:tickFont,color:textColor});
+
   }
   if (page4) {
 	page4.drawText(`${data.firstName || ""} ${data.lastName || ""}`, {
@@ -133,12 +138,13 @@ const applicationForm = async (data) => {
   
 };
 
- const sampleData={
-    firstName: "Abhishek",
-    lastName: "Rathore",
-    appId: "ALA000002197117",
-    loanAmount: "223766",
-    adress: "we Hy 75 pg... emt rm me, (2 a, SolanVa $8 Tower 452001 Gi 5% 7A, /008:1995 257 Lr, PUMALL 11 cio inan ,ar, 00 i 5 it,97786 ALA000001928765",
-}
-applicationForm(sampleData)
+//  const sampleData={
+//     firstName: "Abhishek",
+//     lastName: "Rathore",
+//     appId: "ALA000002197117",
+//     loanAmount: "223766",
+//     adress: "we Hy 75 pg... emt rm me, (2 a, SolanVa $8 Tower 452001 Gi 5% 7A, /008:1995 257 Lr, PUMALL 11 cio inan ,ar, 00 i 5 it,97786 ALA000001928765",
+//     insurance:"80"
+// }
+// applicationForm(sampleData)
 export { applicationForm };

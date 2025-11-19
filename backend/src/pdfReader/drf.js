@@ -67,9 +67,9 @@ const drfForm = async (data) => {
   // -----------------------------
   // Header section
   // -----------------------------
-  page.drawText(data.place || "Indore", { x: 450, y: 741, size: fontSize, font, color: textColor });
-  page.drawText(data.date || "10-11-2025", { x: 450, y: 765, size: fontSize, font, color: textColor });
-  page.drawText(data.appId || "", { x: 406, y: 711, size: fontSize, font, color: textColor });
+  page.drawText("Indore", { x: 450, y: 741, size: fontSize, font, color: textColor });
+  page.drawText(data.date || "", { x: 450, y: 765, size: fontSize, font, color: textColor });
+  page.drawText(data.appId || "", { x: 400, y: 711, size: fontSize, font, color: textColor });
   page.drawText(data.insurance || "ins", { x: 465, y:283, size: fontSize, font, color: textColor });
   page.drawText(String(data.loanAmount || ""), { x: 215, y: 688, size: fontSize, font, color: textColor });
 drawWrappedAmount(
@@ -87,7 +87,7 @@ drawWrappedAmount(
   // -----------------------------
   // Bank Table Logic
   // -----------------------------
-  const xColumn = data.bankName?.toLowerCase() === "axis bank ltd" ? 205 : 320;
+  const xColumn = data.bankName?.toLowerCase() === "axis bank ltd" ? 180 : 320;
   let y = 570;
   const gap = 28;
 
@@ -109,8 +109,8 @@ drawWrappedAmount(
 
   drawField(data.beneficiaryName);
   drawField(data.bankName);
-  drawField(data.accountNo, { yOverride: 514 });
-  drawField(data.ifscCode, { yOverride: 498 });
+  drawField(data.accountNo, { yOverride: 513 });
+  drawField(data.ifscCode, { yOverride: 497 });
   drawField(data.disbursementAmount, { yOverride: 481 });
 
 
@@ -134,14 +134,14 @@ drawWrappedAmount(
 // -----------------------------
 // const sampleDrf = {
 //   appId: "ALA000002197117",
-//   loanAmount: 2237678806,
+//   loanAmount: 223767,
 //   disbursementAmount: "215420",
 //   place: "Indore",
 //   date: "11-23-2025",
 //   beneficiaryName: "Khushi Rathore",
-//   bankName: "State Bank of India",
-//   accountNo: "983478468",
-//   ifscCode: "SBIN4090",
+//   bankName: "Axis bank ltd",
+//   accountNo: "9834784687483",
+//   ifscCode: "SBIN409038778",
 //   insurance:"9632"
 // };
 

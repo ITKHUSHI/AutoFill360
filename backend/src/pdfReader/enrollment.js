@@ -38,6 +38,11 @@ const enrollmentForm = async (data) => {
   const templatePdfPath = "./src/templates/enrollment.pdf"; // <== PDF template now
   const fontPath = "./src/fonts/NotoSans_ExtraCondensed-Regular.ttf";
 
+    //  use this font for tick
+const fontBytes1 = fs.readFileSync(
+  "./node_modules/dejavu-fonts-ttf/ttf/DejaVuSans.ttf"
+  // dejavu-fonts-ttf
+);  
   // Load template and font
   const existingPdfBytes = fs.readFileSync(templatePdfPath);
   const fontBytes = fs.readFileSync(fontPath);
@@ -47,6 +52,8 @@ const enrollmentForm = async (data) => {
   pdfDoc.registerFontkit(fontkit);
 
   const font = await pdfDoc.embedFont(fontBytes);
+  const tickFont = await pdfDoc.embedFont(fontBytes1);
+
   const textColor = rgb(0, 0, 0);
   const fontSize = 14;
 
@@ -57,9 +64,9 @@ const enrollmentForm = async (data) => {
   // -----------------------------
   // PAGE 1 — Fill applicant details
   // -----------------------------
-  page1.drawText(data.city || "Indore", { x: 230, y: 462, size: fontSize, font, color: textColor });
-  page1.drawText(data.State || "Madhya Pradesh", { x: 328, y: 462, size: fontSize, font, color: textColor });
-  page1.drawText(data.District || "Dhar", { x: 150, y: 462, size: fontSize, font, color: textColor });
+  page1.drawText(data.city || "", { x: 230, y: 462, size: fontSize, font, color: textColor });
+  page1.drawText(data.State || "", { x: 328, y: 462, size: fontSize, font, color: textColor });
+  page1.drawText(data.District || "", { x:150, y: 462, size: fontSize, font, color: textColor });
   page1.drawText(data.pincode || "", { x: 456, y: 462, size: fontSize, font, color: textColor });
   page1.drawText(data.appId || "", { x: 210, y: 725, size: fontSize, font, color: textColor });
 
@@ -69,6 +76,7 @@ const enrollmentForm = async (data) => {
   page1.drawText(data.EmailId || "", { x: 132, y: 429, size: fontSize, font, color: textColor });
   page1.drawText(data.gender || "", { x: 350, y: 536, size: fontSize, font, color: textColor });
   page1.drawText(data.DOBDate || "", { x: 150, y: 536, size: fontSize, font, color: textColor });
+  page1.drawText("✔",{x:200,y:517,size:fontSize,font:tickFont,color:textColor});
   page1.drawText((data.UniqueId || ""), { x: 459, y: 427, size: fontSize+2, font, color: textColor });
   drawWrappedEAddress(
       page1,
@@ -95,7 +103,11 @@ const enrollmentForm = async (data) => {
   page1.drawText(data.DOBDate || "", { x: 322, y: 276, size: fontSize, font, color: textColor });
   page1.drawText(data.gender || "", { x: 455, y: 276, size: fontSize, font, color: textColor });
   page1.drawText(data.UniqueId || "", { x: 503, y: 276, size: fontSize, font, color: textColor });
-
+  page1.drawText("✔",{x:543,y:183,size:fontSize,font:tickFont,color:textColor});
+  page1.drawText("✔",{x:543,y:169,size:fontSize,font:tickFont,color:textColor});
+  page1.drawText("✔",{x:543,y:155,size:fontSize,font:tickFont,color:textColor});
+  page1.drawText("✔",{x:543,y:141,size:fontSize,font:tickFont,color:textColor});
+  page1.drawText("✔",{x:543,y:127,size:fontSize,font:tickFont,color:textColor});
  if(page2){
     page2.drawText(data.DateOfSanction || "", { x: 100, y: 103, size: fontSize, font, color: textColor });
     page2.drawText("Dhar", { x: 365, y: 103, size: fontSize, font, color: textColor });
@@ -104,6 +116,14 @@ const enrollmentForm = async (data) => {
     page2.drawText(data.insurance, { x: 500, y: 720, size: fontSize, font, color: textColor });
     page2.drawText(data.nominee, { x: 160, y: 460, size: fontSize, font, color: textColor });
     page2.drawText(data.relationWithnominee, { x: 470, y: 460, size: fontSize, font, color: textColor });
+    page2.drawText("✔",{x:40,y:386,size:fontSize,font:tickFont,color:textColor});
+    page2.drawText("✔",{x:40,y:352,size:fontSize,font:tickFont,color:textColor});
+    page2.drawText("✔",{x:40,y:328,size:fontSize,font:tickFont,color:textColor});
+    page2.drawText("✔",{x:40,y:304,size:fontSize,font:tickFont,color:textColor});
+    page2.drawText("✔",{x:40,y:258,size:fontSize,font:tickFont,color:textColor});
+    page2.drawText("✔",{x:40,y:236,size:fontSize,font:tickFont,color:textColor});
+    page2.drawText("✔",{x:40,y:200,size:fontSize,font:tickFont,color:textColor});
+
 
  }
   const pdfBytes = await pdfDoc.save();
@@ -119,33 +139,33 @@ const enrollmentForm = async (data) => {
 // -----------------------------
 // 🧪 Sample Data
 // -----------------------------
-const EData = {
-  adress: "Gram Bamhori Mafi  Sesai Saji, Banda Belai, Banda Sagar, Madhya Pradesh, J BUR, 470335, ",
-  DOBDate: "08-11-2025",
-  appId: "ALA000002197117",
-  loanAmount: "223766",
-  disbursementAmount: "215420",
-  firstName: "Abhishek",
-  lastName: "Rathore",
-  gender: "Male",
-  Mobile: "937786476",
-  District: "Dhar",
-  State: "Madhya Pradesh",
-  city: "Dhar",
-  pincode: "454001",
-  typeOfLoan: "T.W.",
-  EmailId: "kkk@gmail.com",
-  UniqueId: "3749",
-  DateOfSanction: "10-11-2025",
-  NameOfInsuredPerson: "Abhishek Rathore",
-  RelationshipWithApplicant: "Self",
-  LoanTenure:"14",
-  insurance:"963",
-  nominee:"sjke",
-  relationWithnominee:"father"
+// const EData = {
+//   adress: "Gram Bamhori Mafi  Sesai Saji, Banda Belai, Banda Sagar, Madhya Pradesh, J BUR, 470335, ",
+//   DOBDate: "08-11-2025",
+//   appId: "ALA000002197117",
+//   loanAmount: "223766",
+//   disbursementAmount: "215420",
+//   firstName: "Abhishek",
+//   lastName: "Rathore",
+//   gender: "Male",
+//   Mobile: "937786476",
+//   District: "Dhar",
+//   State: "Madhya Pradesh",
+//   city: "Dhar",
+//   pincode: "454001",
+//   typeOfLoan: "T.W.",
+//   EmailId: "kkk@gmail.com",
+//   UniqueId: "3749",
+//   DateOfSanction: "10-11-2025",
+//   NameOfInsuredPerson: "Abhishek Rathore",
+//   RelationshipWithApplicant: "Self",
+//   LoanTenure:"14",
+//   insurance:"963",
+//   nominee:"sjke",
+//   relationWithnominee:"father"
  
-};
-enrollmentForm(EData)
+// };
+// enrollmentForm(EData)
 
 // Run test
 
