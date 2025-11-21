@@ -26,7 +26,13 @@ const BANK_HOLDERS = [
     bankName: "HDFC BANK LDT",
     ifscCode: "HDFC0009044",
     accountNumber: "59208000709636",
-  },
+  },{
+     id:5,
+     beneficiaryName	:"RR TYREAGE PVT LTD",
+     bankName	:"ICICI BANK LTD",
+     ifscCode	:"ICIC0001859",
+     accountNumber:	"185905000460"
+  }
  
 ];
 

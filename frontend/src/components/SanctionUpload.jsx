@@ -9,11 +9,11 @@ GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-// --------------------------
-// NORMALIZE HELPERS
-// --------------------------
+/* ------------------  HELPERS ------------------ */
+
 const normalizeDate = (dateStr = "") => {
   if (!dateStr) return "";
+
   const months = {
     january: "01", february: "02", march: "03", april: "04",
     may: "05", june: "06", july: "07", august: "08",
@@ -34,15 +34,12 @@ const normalizeDate = (dateStr = "") => {
 const normalizeText = (text = "") =>
   text.replace(/\s+/g, " ").replace(/[:]/g, "").trim();
 
-// --------------------------
-// PARSER
-// --------------------------
 const parseSanctionText = (raw = "") => {
   const text = normalizeText(raw);
   const find = (regex) => text.match(regex)?.[1]?.trim() || "";
 
   return {
-    date:  normalizeDate(find(/Date\s+([A-Za-z]+\s\d{1,2},?\s?\d{4})/i)),
+    date: normalizeDate(find(/Date\s+([A-Za-z]+\s\d{1,2},?\s?\d{4})/i)),
     referenceNo: find(/Reference\s*No\.?\s*([A-Z0-9]+)/i),
     loanAmount: find(/Loan\s*Amount\s*(?:INR|Rs\.?)?\s*([\d,]+)/i),
     disbursement: find(/Disbursement\s*(?:INR|Rs\.?)?\s*([\d,]+)/i),
@@ -53,9 +50,7 @@ const parseSanctionText = (raw = "") => {
   };
 };
 
-// =====================================================
-//                 COMPONENT STARTS
-// =====================================================
+/* ------------------  COMPONENT ------------------ */
 
 const SanctionUpload = ({ onDataExtracted }) => {
   const [parsedData, setParsedData] = useState(null);
@@ -64,12 +59,9 @@ const SanctionUpload = ({ onDataExtracted }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // --------------------------
-  // FILE UPLOAD HANDLER
-  // --------------------------
+  /* ------------- MAIN FILE HANDLER ------------- */
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleFileUpload = async (file) => {
     if (!file) return;
 
     setFileName(file.name);
@@ -95,27 +87,34 @@ const SanctionUpload = ({ onDataExtracted }) => {
           processExtract(fullText);
         };
         reader.readAsArrayBuffer(file);
-      } else if (file.type.startsWith("image/")) {
+      }
+
+      else if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = async () => {
           const result = await Tesseract.recognize(reader.result, "eng");
           processExtract(result.data.text);
         };
         reader.readAsDataURL(file);
-      } else {
+      }
+
+      else {
         setError("Only PDF or JPG supported.");
         setLoading(false);
       }
+
     } catch (err) {
-      // console.error("Extraction error:", err);
       setError("Error while extracting text.");
       setLoading(false);
     }
   };
 
-  // --------------------------
-  // PROCESS RAW TEXT
-  // --------------------------
+  /* Ensure input element triggers properly */
+  const handleInputChange = (e) => {
+    handleFileUpload(e.target.files[0]);
+  };
+
+  /* ------------- PROCESS TEXT ------------- */
 
   const processExtract = (rawText) => {
     const extracted = parseSanctionText(rawText);
@@ -125,52 +124,50 @@ const SanctionUpload = ({ onDataExtracted }) => {
     setLoading(false);
   };
 
-  // --------------------------
-  // HANDLE EDIT
-  // --------------------------
+  /* ------------- DRAG & DROP ------------- */
 
-  const handleChange = (key, value) => {
-    setEditableData((prev) => ({ ...prev, [key]: value }));
+  const onDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileUpload(file);
   };
 
-  // --------------------------
-  // SUBMIT UPDATED DATA
-  // --------------------------
+  /* ------------- SAVE EDITS ------------- */
 
   const handleUpdate = () => {
     if (!Object.keys(editableData).length) return;
-    onDataExtracted && onDataExtracted(editableData);
+    onDataExtracted(editableData);
     toast.success("Data updated successfully!");
   };
 
-  // =====================================================
-  //                UI / JSX
-  // =====================================================
+  /* ------------------ JSX ------------------ */
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 mb-6">
       <h3 className="text-xl font-semibold mb-3">Sanction Upload (PDF/JPG)</h3>
 
-      {/* FILE UPLOADER */}
+      <div
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={onDrop}
+        className="border-2 border-dashed border-gray-400 bg-gray-50 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100"
+        onClick={() => document.getElementById("sanctionInput").click()}
+      >
+        <p className="text-gray-600">Drag & Drop PDF / Image here</p>
+        <p className="text-sm text-gray-400 mt-1">or click to browse</p>
+      </div>
+
       <input
+        id="sanctionInput"
         type="file"
         accept="application/pdf,image/jpeg,image/jpg"
-        onChange={handleFileUpload}
-        className="mb-3 block  text-sm text-gray-500
-          file:mr-4 file:py-2 file:px-4
-          border-2 rounded-2xl
-          file:rounded-lg file:border-0
-          file:text-sm file:font-semibold
-          file:bg-blue-50 file:text-blue-700
-          hover:file:bg-blue-100 "
-          
+        onChange={handleInputChange}
+        className="hidden"
       />
 
       {fileName && <p className="text-sm text-gray-700 mb-2">📄 {fileName}</p>}
       {loading && <p className="text-gray-600 italic">Extracting data...</p>}
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      {/* EDITABLE TABLE */}
       {parsedData && (
         <div className="overflow-x-auto mt-4">
           <table className="min-w-full border text-sm text-gray-800 bg-gray-50 rounded-lg">
@@ -183,7 +180,7 @@ const SanctionUpload = ({ onDataExtracted }) => {
                   <td className="px-3 py-2">
                     <input
                       value={val || ""}
-                      onChange={(e) => handleChange(key, e.target.value)}
+                      onChange={(e) => setEditableData({ ...editableData, [key]: e.target.value })}
                       className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
                     />
                   </td>
@@ -192,7 +189,6 @@ const SanctionUpload = ({ onDataExtracted }) => {
             </tbody>
           </table>
 
-          {/* UPDATE BUTTON */}
           <div className="flex justify-end mt-4">
             <button
               onClick={handleUpdate}
@@ -214,3 +210,5 @@ const SanctionUpload = ({ onDataExtracted }) => {
 };
 
 export default SanctionUpload;
+
+

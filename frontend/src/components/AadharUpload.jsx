@@ -250,15 +250,17 @@ const AadharUpload = ({ onDataExtracted }) => {
             </tbody>
           </table>
 
-          <button
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
+          <div className="flex justify-end mt-4 ">
+            <button
+             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700"
             onClick={() => {
               toast.success("Updated!");
               onDataExtracted && onDataExtracted(parsed);
             }}
           >
-            Save Updated
+            Save Updated Data
           </button>
+          </div>
         </div>
       )}
 

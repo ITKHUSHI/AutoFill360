@@ -38,6 +38,8 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.set("trust proxy", true);
+
 app.use("/api/files",fileRouter)
 app.use("/api/user",userRouter)
 
