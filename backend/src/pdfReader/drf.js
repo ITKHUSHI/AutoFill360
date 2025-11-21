@@ -70,7 +70,7 @@ const drfForm = async (data) => {
   page.drawText("Indore", { x: 450, y: 741, size: fontSize, font, color: textColor });
   page.drawText(data.date || "", { x: 450, y: 765, size: fontSize, font, color: textColor });
   page.drawText(data.appId || "", { x: 400, y: 711, size: fontSize, font, color: textColor });
-  page.drawText(data.insurance || "ins", { x: 465, y:283, size: fontSize, font, color: textColor });
+  page.drawText(data.insurance || "", { x: 465, y:283, size: fontSize, font, color: textColor });
   page.drawText(String(data.loanAmount || ""), { x: 215, y: 688, size: fontSize, font, color: textColor });
 drawWrappedAmount(
   page,

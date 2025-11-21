@@ -44,7 +44,7 @@ const fontBytes1 = fs.readFileSync(
   });
   drawWrappedAddress(
   page1,
-  data.adress || "",
+  data.adress +" "+ data.pincode  || "",
   223,                   // X
   599,                   // Y
   225,                   // max width before wrapping

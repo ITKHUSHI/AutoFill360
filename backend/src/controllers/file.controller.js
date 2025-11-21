@@ -67,7 +67,9 @@ const generatePdf = async (req, res) => {
       adress: aadhar.address || "",
       appId: sanction.referenceNo || "",
       loanAmount: sanction.loanAmount || "",
-      insurance:sanction.insurance || ""
+      insurance:sanction.insurance || "",
+      pincode: aadhar.pincode || "",
+
     };
 
    
@@ -93,9 +95,9 @@ const generatePdf = async (req, res) => {
       applicationPdf: `${baseUrl}/filled_application.pdf`
     };
 
-      await User.findByIdAndUpdate(req.user._id, {
-      $inc: { generatePdfCount: 1 }
-    });
+    //   await User.findByIdAndUpdate(req.user._id, {
+    //   $inc: { generatePdfCount: 1 }
+    // });
 
     return res.status(200).json({
       message: "PDFs generated successfully",

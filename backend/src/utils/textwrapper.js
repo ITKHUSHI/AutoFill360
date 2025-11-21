@@ -22,7 +22,7 @@ function drawWrappedAmount(page, text, x, y, maxWidth, font, fontSize, lineHeigh
       // Move to new line
       line = word + " ";
       currentY -= lineHeight; // shift downward
-	  currentX-=280
+	  currentX-=290
     } else {
       line = testLine;
     }
