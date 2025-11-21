@@ -1,36 +1,45 @@
 export default function Footer() {
   return (
-    <footer className=" bg-white  text-gray-900 mt-16">
-      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-10">
+    <footer className="bg-gray-50 text-gray-900 mt-16">
+      <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
 
+        {/* Brand / About */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-3">DocGen</h3>
-          <p className="text-sm">
-            Smart document processing and automated PDF generation. 
-            Built for speed and built for accuracy.
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">AutoFill360</h3>
+          <p className="text-sm text-gray-700">
+            Smart document processing and automated PDF generation.  
+            Built for speed and accuracy.
           </p>
         </div>
 
+        {/* Quick Links */}
         <div>
-          <h4 className="text-sm font-semibold text-white mb-3">Quick Links</h4>
-          <ul className="space-y-2 text-sm">
-            <li><a href="/" className="hover:text-gray-700">Home</a></li>
-            {/* <li><a href="/upload" className="hover:text-gray-700">Upload Documents</a></li>
-            <li><a href="/about" className="hover:text-gray-700">About</a></li>
-            <li><a href="/contact" className="hover:text-gray-700">Contact</a></li> */}
+          <h4 className="text-sm font-semibold text-gray-900 mb-3">Quick Links</h4>
+          <ul className="space-y-2 text-sm text-gray-700">
+            <li>
+              <a href="/" className="hover:text-indigo-600 transition">Home</a>
+            </li>
+            <li>
+              <a href="/upload-doc" className="hover:text-indigo-600 transition">Upload Documents</a>
+            </li>
+            {/* <li>
+              <a href="/billing" className="hover:text-indigo-600 transition">Pricing & Plans</a>
+            </li> */}
           </ul>
         </div>
 
+        {/* Contact & Legal */}
         <div>
-          <h4 className="text-sm font-semibold text-white mb-3">Contact</h4>
-          <p className="text-sm">khushee0225@gmail.com</p>
-          <p className="text-sm"></p>
+          <h4 className="text-sm font-semibold text-gray-900 mb-3">Contact & Legal</h4>
+          <p className="text-sm text-gray-700">Email: khushee0225@gmail.com</p>
+          <p className="text-sm text-gray-700 mt-2">
+            <a href="/terms" className="hover:text-indigo-600 transition">Terms & Conditions</a>
+          </p>
+          <p className="text-sm text-gray-700 mt-1">
+            All rights reserved © {new Date().getFullYear()} AutoFill360.
+          </p>
         </div>
 
-      </div>
-
-      <div className="border-t border-gray-700 text-center py-4 text-sm">
-        © {new Date().getFullYear()} DocGen. All rights reserved.
       </div>
     </footer>
   );

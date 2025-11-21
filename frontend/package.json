@@ -20,6 +20,7 @@
     "react-hot-toast": "^2.6.0",
     "react-pdf": "^10.2.0",
     "react-router": "^7.9.5",
+    "react-router-dom": "^7.9.6",
     "string-similarity": "^4.0.4",
     "tailwindcss": "^4.1.13",
     "tesseract.js": "^6.0.1"

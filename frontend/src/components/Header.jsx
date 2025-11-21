@@ -3,13 +3,19 @@ import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const isLoggedIn= true //||localStorage.getItem("isLoggedIn")
+  const navLinks = isLoggedIn
+  ? [
+      { label: "Home", href: "/" },
+      { label: "Upload & Generate PDF", href: "/upload-doc" },
+      // { label: "Profile", href: "/profile" },
+    ]
+  : [
+      { label: "Home", href: "/" },
+      // { label: "Login", href: "/login" },
+      // { label: "Signup", href: "/signup" },
+    ];
 
-  const navLinks = [
-    { label: "Home", href: "/" },
-    // { label: "Upload", href: "/upload" },
-    // { label: "About", href: "/about" },
-    // { label: "Contact", href: "/contact" },
-  ];
 
   return (
     <header className="sticky top-0 z-40 bg-white shadow-sm">

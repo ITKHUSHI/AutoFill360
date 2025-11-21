@@ -162,7 +162,8 @@ const SanctionUpload = ({ onDataExtracted }) => {
           file:rounded-lg file:border-0
           file:text-sm file:font-semibold
           file:bg-blue-50 file:text-blue-700
-          hover:file:bg-blue-100"
+          hover:file:bg-blue-100 "
+          
       />
 
       {fileName && <p className="text-sm text-gray-700 mb-2">📄 {fileName}</p>}
