@@ -32,6 +32,13 @@ const BANK_HOLDERS = [
      bankName	:"ICICI BANK LTD",
      ifscCode	:"ICIC0001859",
      accountNumber:	"185905000460"
+  },
+  {
+     id:6,
+     beneficiaryName	:"RUKMANI MOTORS PVT LTD",
+     bankName	:"ICICI BANK LTD",
+     ifscCode	:"ICIC0007750",
+     accountNumber:	"775005000135"
   }
  
 ];

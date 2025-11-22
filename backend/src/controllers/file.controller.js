@@ -1,4 +1,4 @@
-import { enrollmentForm } from "../pdfReader/enrollment.js";
+import { enrollmentForm } from "../pdfReader/TataAIG.js";
 import { drfForm } from "../pdfReader/drf.js";
 import { applicationForm } from "../pdfReader/app.js";
 import {User} from "../model/user.model.js"
@@ -39,8 +39,9 @@ const generatePdf = async (req, res) => {
       appId: sanction.referenceNo || "",
       loanAmount: sanction.loanAmount || "",
       disbursementAmount: sanction.disbursement || "",
-      firstName: aadhar.firstName || "",
-      lastName: aadhar.lastName || "",
+      firstName: sanction.firstName || "",
+      middleName:sanction.middleName?.toUpperCase() || "",
+      lastName: sanction.lastName || "",
       gender: aadhar.gender || "Male",
       Mobile: aadhar.mobile || "",
       District: aadhar.district || "",
@@ -51,7 +52,7 @@ const generatePdf = async (req, res) => {
       EmailId: sanction.email || "",
       UniqueId: aadhar.aadhaarLast4 || "",
       DateOfSanction: sanction.date || "",
-      NameOfInsuredPerson: `${aadhar.firstName} ${aadhar.lastName}`,
+      NameOfInsuredPerson: `${sanction.firstName} ${sanction.middleName?.toUpperCase()} ${sanction.lastName}`,
       RelationshipWithApplicant: "Self",
       LoanTenure: sanction.tenure || "",
       insurance : sanction.insurance || "",
@@ -59,11 +60,11 @@ const generatePdf = async (req, res) => {
       relationWithnominee: aadhar.relationWithnominee ||"father"
 
     };
-
     // ---------------------------------------------
     const appData = {
-      firstName: aadhar.firstName || "",
-      lastName: aadhar.lastName || "",
+      firstName: sanction.firstName || "",
+      middleName:sanction.middleName?.toUpperCase() || "",
+      lastName: sanction.lastName || "",
       adress: aadhar.address || "",
       appId: sanction.referenceNo || "",
       loanAmount: sanction.loanAmount || "",
@@ -91,7 +92,7 @@ const generatePdf = async (req, res) => {
 
     const pdfUrls = {
       drfPdf: `${baseUrl}/filled_drf.pdf`,
-      enrollmentPdf: `${baseUrl}/filled_enrollment.pdf`,
+      TataAIGPdf: `${baseUrl}/filled_TataAIG.pdf`,
       applicationPdf: `${baseUrl}/filled_application.pdf`
     };
 

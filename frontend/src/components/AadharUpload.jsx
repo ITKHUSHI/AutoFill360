@@ -51,27 +51,7 @@ const parseAadharText = (raw = "") => {
       const aadhaarLast4 = extract(text,/Mobile\s*:\s*[6-9]\d{9}\s+(\d{4}\s\d{4}\s\d{4})/i).slice(-4);
 
 
-  const mobile = extract(text, /\b([6-9]\d{9})\b/);
-
-  // -------------------------
-  // OWNER NAME (fallback)
-  // -------------------------
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
-  let ownerName = "";
-  for (const l of lines) {
-    if (/S\/O|D\/O/i.test(l)) {
-      const idx = lines.indexOf(l);
-      if (idx > 0) ownerName = lines[idx - 1];
-    }
-  }
-  if (!ownerName) {
-    let guess = lines.find((l) => /^[A-Za-z]+\s+[A-Za-z]+/.test(l));
-    ownerName = guess || "";
-  }
-
-  const parts = ownerName.split(/\s+/);
-  const firstName = parts[0] || "";
-  const lastName = parts.length > 1 ? parts[parts.length - 1] : "";
+  const mobile = extract(text, /\b([6-9]\d{9})\b/); 
 
   // -------------------------
   // NOMINEE EXTRACTION
@@ -108,8 +88,6 @@ addressRaw = addressRaw.replace(
     .toLowerCase();
 
   return {
-    firstName,
-    lastName,
     aadhaarLast4,
     dob,
     mobile,
@@ -185,7 +163,6 @@ const AadharUpload = ({ onDataExtracted }) => {
       let text = "";
       if (file.type === "application/pdf") text = await extractTextFromPDF(file);
       else text = await extractTextFromImage(file);
-
       setRaw(text);
       const data = parseAadharText(text);
       setParsed(data);
@@ -205,75 +182,116 @@ const AadharUpload = ({ onDataExtracted }) => {
 
   return (
     <div className="bg-white shadow p-5 rounded-xl">
-      <h2 className="text-lg font-semibold mb-3">Aadhaar Upload</h2>
 
-      {/* ---------------- DROP ZONE ---------------- */}
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={onDrop}
-        className="border-2 border-dashed border-gray-400 bg-gray-50 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100"
-        onClick={() => document.getElementById("filePick").click()}
-      >
-        <p className="text-gray-600">Drag & Drop PDF / Image here</p>
-        <p className="text-sm text-gray-400 mt-1">or click to browse</p>
+  {/* Title */}
+  <h2 className="text-lg md:text-xl font-semibold mb-3">Aadhaar Upload</h2>
+
+  {/* Upload Box */}
+  <div
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={onDrop}
+    onClick={() => document.getElementById("filePick").click()}
+    className="border-2 border-dashed border-gray-400 bg-gray-50 rounded-xl 
+               p-5 md:p-6 text-center cursor-pointer hover:bg-gray-100 transition"
+  >
+    <p className="text-gray-600 text-sm md:text-base">
+      Drag & Drop PDF / Image here
+    </p>
+    <p className="text-xs text-gray-400 mt-1">or click to browse</p>
+  </div>
+
+  <input
+    id="filePick"
+    type="file"
+    accept="application/pdf,image/*"
+    className="hidden"
+    onChange={(e) => handleFiles(e.target.files[0])}
+  />
+
+  {loading && (
+    <p className="mt-3 text-gray-500 italic text-sm">
+      Extracting...
+    </p>
+  )}
+
+  {/* ---------------- EDITABLE FIELDS ---------------- */}
+  {parsed && (
+    <div className="mt-5">
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full border text-sm bg-gray-50 rounded-lg">
+          <tbody>
+            {Object.keys(parsed).map((key) => (
+              <tr key={key} className="border-b last:border-none">
+                <td className="p-2 w-48 font-semibold capitalize whitespace-nowrap">
+                  {key.replace(/([A-Z])/g, " $1")}
+                </td>
+                <td className="p-2">
+                  <input
+                    className="w-full border px-2 py-1 rounded-md 
+                               focus:outline-none focus:ring focus:ring-blue-300"
+                    value={parsed[key] || ""}
+                    onChange={(e) =>
+                      setParsed((p) => ({ ...p, [key]: e.target.value }))
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      <input
-        id="filePick"
-        type="file"
-        accept="application/pdf,image/*"
-        className="hidden"
-        onChange={(e) => handleFiles(e.target.files[0])}
-      />
-
-      {loading && <p className="mt-3 text-gray-500 italic">Extracting...</p>}
-
-      {/* ---------------- TABLE ---------------- */}
-      {parsed && (
-        <div className="mt-5">
-          <table className="w-full border text-sm rounded-lg bg-gray-50">
-            <tbody>
-              {Object.keys(parsed).map((key) => (
-                <tr key={key} className="border-b">
-                  <td className="p-2 font-semibold w-1/3 capitalize">{key}</td>
-                  <td className="p-2">
-                    <input
-                      className="w-full border px-2 py-1 rounded-md"
-                      value={parsed[key] || ""}
-                      onChange={(e) =>
-                        setParsed((p) => ({ ...p, [key]: e.target.value }))
-                      }
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="flex justify-end mt-4 ">
-            <button
-             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700"
-            onClick={() => {
-              toast.success("Updated!");
-              onDataExtracted && onDataExtracted(parsed);
-            }}
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {Object.keys(parsed).map((key) => (
+          <div
+            key={key}
+            className="border rounded-lg p-3 bg-gray-50"
           >
-            Save Updated Data
-          </button>
+            <p className="text-xs text-gray-500 mb-1 capitalize">
+              {key.replace(/([A-Z])/g, " $1")}
+            </p>
+            <input
+              className="w-full border px-2 py-1 rounded-md text-sm 
+                         focus:outline-none focus:ring focus:ring-blue-300"
+              value={parsed[key] || ""}
+              onChange={(e) =>
+                setParsed((p) => ({ ...p, [key]: e.target.value }))
+              }
+            />
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
-      {/* ---------------- RAW TEXT ---------------- */}
-      {raw && (
-        <details className="mt-4 text-xs text-gray-500">
-          <summary>Raw Extracted Text</summary>
-          <div className="mt-2 max-h-64 overflow-y-auto whitespace-pre-wrap">
-            {raw}
-          </div>
-        </details>
-      )}
+      {/* Save Button */}
+      <div className="flex justify-end mt-4">
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold 
+                     hover:bg-blue-700"
+          onClick={() => {
+            toast.success("Updated!");
+            onDataExtracted && onDataExtracted(parsed);
+          }}
+        >
+          Save Updated Data
+        </button>
+      </div>
     </div>
+  )}
+
+  {/* ---------------- RAW EXTRACTED TEXT ---------------- */}
+  {raw && (
+    <details className="mt-4 text-xs text-gray-500">
+      <summary className="cursor-pointer">Raw Extracted Text</summary>
+      <div className="mt-2 max-h-64 overflow-y-auto whitespace-pre-wrap bg-gray-50 p-3 rounded-md">
+        {raw}
+      </div>
+    </details>
+  )}
+</div>
+
   );
 };
 

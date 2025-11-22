@@ -2,13 +2,20 @@ import React, { useState } from "react";
 import Tesseract from "tesseract.js";
 import { BANK_HOLDERS } from "../utills/bankdetails";
 import toast from "react-hot-toast";
-// 🔹 Extract data from OCR text (same as before)
+import * as pdfjsLib from "pdfjs-dist/build/pdf";
+import { GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+
+// PDF worker
+GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
+
+// 🔹 Extract data from OCR text
 const parseBankDetails = (rawText = "") => {
   const text = rawText.replace(/[^\x00-\x7F]/g, " ").replace(/\s+/g, " ").trim();
-
   const ifscMatch = text.match(/\b([A-Z]{4}0[A-Z0-9]{6})\b/i);
   const ifscCode = ifscMatch ? ifscMatch[1].toUpperCase() : "";
-
   const accountMatches = text.match(/\b\d{9,18}\b/g) || [];
   let accountNumber = "";
   for (const num of accountMatches) {
@@ -17,7 +24,6 @@ const parseBankDetails = (rawText = "") => {
       break;
     }
   }
-
   const bankMatch = text.match(
     /\b([A-Z][A-Za-z\s]+?(?:Bank|BANK|Ltd|LIMITED|Co\-op|CO\-OPERATIVE|Nagarik|Gramin|Grameen|Vikas))\b/i
   );
@@ -25,7 +31,7 @@ const parseBankDetails = (rawText = "") => {
 
   let beneficiaryName = "";
   const nameMatch = text.match(
-    /\b(?:Name|Account\s*Holder|A\/C\s*Name)[:\-]?\s*([A-Za-z\s\.]+)/i
+    /\b(?:Name|Benificiary Name|Account\s*Holder|A\/C\s*Name)[:\-]?\s*([A-Za-z\s\.]+)/i
   );
   if (nameMatch) {
     beneficiaryName = nameMatch[1].replace(/[^A-Za-z\s\.]/g, "").trim();
@@ -34,12 +40,8 @@ const parseBankDetails = (rawText = "") => {
     const nameCandidate = beforeBank.match(/\b([A-Z][A-Za-z]+\s+[A-Z][A-Za-z]+)/);
     if (nameCandidate) beneficiaryName = nameCandidate[1].trim();
   }
-
   return { beneficiaryName, bankName, ifscCode, accountNumber };
 };
-
-// 🔹 Predefined bank holders list
-
 
 const BankUpload = ({ onDataExtracted }) => {
   const [parsedData, setParsedData] = useState(null);
@@ -49,7 +51,7 @@ const BankUpload = ({ onDataExtracted }) => {
   const [error, setError] = useState("");
   const [selectedHolder, setSelectedHolder] = useState("");
 
-  // OCR Extraction (Image/PDF)
+  // OCR extraction (supports PDF + image)
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -59,31 +61,45 @@ const BankUpload = ({ onDataExtracted }) => {
     setError("");
 
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
+      if (file.type === "application/pdf") {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1); // first page only
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: context, viewport }).promise;
+        const imgData = canvas.toDataURL("image/png");
+        const result = await Tesseract.recognize(imgData, "eng");
+        const text = result.data.text;
+        setRawText(text);
+        const data = parseBankDetails(text);
+        setParsedData(data);
+        onDataExtracted && onDataExtracted(data);
+      } else if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = async () => {
           const result = await Tesseract.recognize(reader.result, "eng");
           const text = result.data.text;
           setRawText(text);
           const data = parseBankDetails(text);
           setParsedData(data);
           onDataExtracted && onDataExtracted(data);
-        } catch (err) {
-          console.error("OCR error:", err);
-          setError("Failed to extract text");
-        } finally {
-          setLoading(false);
-        }
-      };
-      reader.readAsDataURL(file);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        throw new Error("Unsupported file type");
+      }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong");
+      setError("Failed to extract text");
+    } finally {
       setLoading(false);
     }
   };
 
-  // Holder selection from predefined list
   const handleHolderSelect = (holderId) => {
     setSelectedHolder(holderId);
     const holder = BANK_HOLDERS.find((h) => h.id === parseInt(holderId));
@@ -148,7 +164,6 @@ const BankUpload = ({ onDataExtracted }) => {
       {loading && <p className="text-gray-600 italic">Extracting data...</p>}
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      {/* Editable Table */}
       {parsedData && (
         <div className="overflow-x-auto mt-4">
           <table className="min-w-full border text-sm text-gray-800 bg-gray-50 rounded-lg">
@@ -163,9 +178,7 @@ const BankUpload = ({ onDataExtracted }) => {
                       <input
                         type="text"
                         value={parsedData[key] || ""}
-                        onChange={(e) =>
-                          handleEditChange(key, e.target.value)
-                        }
+                        onChange={(e) => handleEditChange(key, e.target.value)}
                         className="border rounded-md px-2 py-1 w-full text-gray-700 focus:outline-none focus:ring focus:ring-blue-300"
                       />
                     </td>
@@ -186,7 +199,6 @@ const BankUpload = ({ onDataExtracted }) => {
         </div>
       )}
 
-      {/* Raw OCR Text (debug) */}
       {rawText && (
         <details className="mt-4 text-xs text-gray-500">
           <summary className="cursor-pointer">Show raw extracted text</summary>

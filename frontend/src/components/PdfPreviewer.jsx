@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 
-// ✅ Use matching pdfjs-dist worker from CDN (future-proof)
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const PdfPreviewer = ({ pdfUrl, scale = 1.2 }) => {
@@ -11,13 +10,12 @@ const PdfPreviewer = ({ pdfUrl, scale = 1.2 }) => {
 
   const onLoadSuccess = ({ numPages }) => setNumPages(numPages);
 
-  // ✅ Support both URL and Uint8Array-based PDF data
-  const file =
-    pdfUrl instanceof Uint8Array
-      ? { data: pdfUrl }
-      : typeof pdfUrl === "string"
-      ? { url: pdfUrl }
-      : null;
+  // ✅ Memoize the file object so its reference doesn't change
+  const file = useMemo(() => {
+    if (pdfUrl instanceof Uint8Array) return { data: pdfUrl };
+    if (typeof pdfUrl === "string") return { url: pdfUrl };
+    return null;
+  }, [pdfUrl]);
 
   if (!file) {
     return <p className="text-gray-500 text-center">No PDF available.</p>;
@@ -57,3 +55,4 @@ const PdfPreviewer = ({ pdfUrl, scale = 1.2 }) => {
 };
 
 export default PdfPreviewer;
+

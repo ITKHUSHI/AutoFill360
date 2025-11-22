@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import fileRouter from "./routes/file.route.js"
 import userRouter from "./routes/user.route.js"
+import bankRouter from "./routes/bank.route.js"
 import { connectDB } from './db/index.js';
 import path from "path";
 import { fileURLToPath } from "url";
@@ -42,6 +43,7 @@ app.set("trust proxy", true);
 
 app.use("/api/files",fileRouter)
 app.use("/api/user",userRouter)
+app.use("/api/bank",bankRouter)
 
 connectDB()
 .then(()=>{

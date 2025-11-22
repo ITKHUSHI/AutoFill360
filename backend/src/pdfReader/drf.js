@@ -87,7 +87,8 @@ drawWrappedAmount(
   // -----------------------------
   // Bank Table Logic
   // -----------------------------
-  const xColumn = data.bankName?.toLowerCase() === "axis bank ltd" ? 180 : 320;
+  const xColumn = data.bankName?.replace(/\s+/g, "").toLowerCase() === "axisbankltd"
+? 180 : 320;
   let y = 570;
   const gap = 28;
 

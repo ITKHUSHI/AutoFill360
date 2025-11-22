@@ -35,7 +35,7 @@ const fontBytes1 = fs.readFileSync(
   // PAGE 1 (Front Page)
   // -----------------------------
   const fontSize = 14;
-  page1.drawText(`${data.firstName || ""} ${data.lastName || ""}`, {
+  page1.drawText(`${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`, {
     x: 170,
     y: 620,
     size: fontSize ,
@@ -73,7 +73,7 @@ const fontBytes1 = fs.readFileSync(
   // PAGE 2 (Back Page)
   // -----------------------------
   if (page2) {
-    page2.drawText(`${data.firstName || ""} ${data.lastName || ""}`, {
+    page2.drawText(`${data.firstName || ""} ${data.middleName || " "} ${data.lastName || ""}`, {
       x: 305,
       y: 641,
       size: fontSize,
@@ -93,7 +93,7 @@ const fontBytes1 = fs.readFileSync(
   // PAGE 3 (Back Page)
   // -----------------------------
   if (page3) {
-    page3.drawText(`${data.firstName || ""} ${data.lastName || ""}`, {
+    page3.drawText(`${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`, {
       x: 200,
       y: 655,
       size: fontSize,
@@ -111,7 +111,7 @@ const fontBytes1 = fs.readFileSync(
 
   }
   if (page4) {
-	page4.drawText(`${data.firstName || ""} ${data.lastName || ""}`, {
+	page4.drawText(`${data.firstName || ""} ${data.middleName || ""} ${data.lastName || ""}`, {
 	  x: 280,
 	  y: 671,
 	  size: fontSize,
@@ -140,6 +140,7 @@ const fontBytes1 = fs.readFileSync(
 
 //  const sampleData={
 //     firstName: "Abhishek",
+//     middleName:"khsh",
 //     lastName: "Rathore",
 //     appId: "ALA000002197117",
 //     loanAmount: "223766",

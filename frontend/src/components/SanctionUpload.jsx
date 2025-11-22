@@ -33,12 +33,36 @@ const normalizeDate = (dateStr = "") => {
 
 const normalizeText = (text = "") =>
   text.replace(/\s+/g, " ").replace(/[:]/g, "").trim();
-
 const parseSanctionText = (raw = "") => {
   const text = normalizeText(raw);
   const find = (regex) => text.match(regex)?.[1]?.trim() || "";
 
+  const rawName = find(/Dear\s+([A-Za-z\s]+),/i);
+
+  let firstName = "";
+  let middleName = "";
+  let lastName = "";
+
+  if (rawName) {
+    const parts = rawName.split(/\s+/).filter(Boolean);
+
+    if (parts.length === 1) {
+      firstName = parts[0].toUpperCase();
+    } 
+    else if (parts.length === 2) {
+      firstName = parts[0].toUpperCase();
+      lastName = parts[1].toUpperCase();
+    } 
+    else if (parts.length >= 3) {
+      firstName = parts[0].toUpperCase();
+      lastName = parts[parts.length - 1].toUpperCase();
+      middleName = parts.slice(1, -1).join(" ").toUpperCase();
+    }
+  }
   return {
+    firstName,
+    middleName,
+    lastName,
     date: normalizeDate(find(/Date\s+([A-Za-z]+\s\d{1,2},?\s?\d{4})/i)),
     referenceNo: find(/Reference\s*No\.?\s*([A-Z0-9]+)/i),
     loanAmount: find(/Loan\s*Amount\s*(?:INR|Rs\.?)?\s*([\d,]+)/i),
@@ -47,6 +71,7 @@ const parseSanctionText = (raw = "") => {
     insurance: find(/TATA\s*AIG\s*(?:INR|Rs\.?)?\s*([\d,]+)/i),
     mobile: find(/\b(\d{10})\b/),
     email: find(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,})/i),
+    
   };
 };
 
@@ -144,68 +169,111 @@ const SanctionUpload = ({ onDataExtracted }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-      <h3 className="text-xl font-semibold mb-3">Sanction Upload (PDF/JPG)</h3>
 
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={onDrop}
-        className="border-2 border-dashed border-gray-400 bg-gray-50 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-100"
-        onClick={() => document.getElementById("sanctionInput").click()}
-      >
-        <p className="text-gray-600">Drag & Drop PDF / Image here</p>
-        <p className="text-sm text-gray-400 mt-1">or click to browse</p>
+  {/* Title */}
+  <h3 className="text-lg md:text-xl font-semibold mb-4">
+    Sanction Upload (PDF/JPG)
+  </h3>
+
+  {/* Upload Box */}
+  <div
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={onDrop}
+    onClick={() => document.getElementById("sanctionInput").click()}
+    className="border-2 border-dashed border-gray-400 bg-gray-50 rounded-xl p-5 md:p-6 
+               text-center cursor-pointer hover:bg-gray-100 transition"
+  >
+    <p className="text-gray-600 text-sm md:text-base">
+      Drag & Drop PDF / Image here
+    </p>
+    <p className="text-xs text-gray-400 mt-1">or click to browse</p>
+  </div>
+
+  <input
+    id="sanctionInput"
+    type="file"
+    accept="application/pdf,image/jpeg,image/jpg"
+    onChange={handleInputChange}
+    className="hidden"
+  />
+
+  {fileName && <p className="text-sm text-gray-700 mt-2">📄 {fileName}</p>}
+  {loading && <p className="text-gray-600 italic mt-2">Extracting data...</p>}
+  {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+  {/* Editable Table / Cards */}
+  {parsedData && (
+    <div className="mt-5">
+
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full border text-sm bg-gray-50 rounded-lg">
+          <tbody>
+            {Object.entries(editableData).map(([key, val]) => (
+              <tr key={key} className="border-b last:border-none">
+                <td className="px-3 py-2 font-semibold capitalize w-48">
+                  {key.replace(/([A-Z])/g, " $1")}
+                </td>
+                <td className="px-3 py-2">
+                  <input
+                    value={val || ""}
+                    onChange={(e) =>
+                      setEditableData({ ...editableData, [key]: e.target.value })
+                    }
+                    className="w-full px-2 py-1 border rounded-md 
+                               focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      <input
-        id="sanctionInput"
-        type="file"
-        accept="application/pdf,image/jpeg,image/jpg"
-        onChange={handleInputChange}
-        className="hidden"
-      />
+      {/* Mobile Card Layout */}
+      <div className="md:hidden space-y-3">
+        {Object.entries(editableData).map(([key, val]) => (
+          <div
+            key={key}
+            className="border rounded-lg p-3 bg-gray-50"
+          >
+            <p className="text-xs text-gray-500 mb-1 capitalize">
+              {key.replace(/([A-Z])/g, " $1")}
+            </p>
 
-      {fileName && <p className="text-sm text-gray-700 mb-2">📄 {fileName}</p>}
-      {loading && <p className="text-gray-600 italic">Extracting data...</p>}
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
-      {parsedData && (
-        <div className="overflow-x-auto mt-4">
-          <table className="min-w-full border text-sm text-gray-800 bg-gray-50 rounded-lg">
-            <tbody>
-              {Object.entries(editableData).map(([key, val]) => (
-                <tr key={key} className="border-b last:border-none">
-                  <td className="px-3 py-2 font-semibold capitalize w-40">
-                    {key.replace(/([A-Z])/g, " $1")}
-                  </td>
-                  <td className="px-3 py-2">
-                    <input
-                      value={val || ""}
-                      onChange={(e) => setEditableData({ ...editableData, [key]: e.target.value })}
-                      className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={handleUpdate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700"
-            >
-              Save Updated Data
-            </button>
+            <input
+              value={val || ""}
+              onChange={(e) =>
+                setEditableData({ ...editableData, [key]: e.target.value })
+              }
+              className="w-full px-2 py-1 border rounded-md 
+                         text-sm focus:outline-none focus:ring focus:ring-blue-300"
+            />
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
-      {!parsedData && !loading && !error && (
-        <div className="h-32 flex items-center justify-center text-gray-400 text-sm">
-          Upload a sanction letter to extract details
-        </div>
-      )}
+      {/* Actions */}
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleUpdate}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg 
+                     font-semibold hover:bg-blue-700"
+        >
+          Save Updated Data
+        </button>
+      </div>
     </div>
+  )}
+
+  {/* Empty State */}
+  {!parsedData && !loading && !error && (
+    <div className="h-28 flex items-center justify-center text-gray-400 text-sm">
+      Upload a sanction letter to extract details
+    </div>
+  )}
+</div>
+
   );
 };
 
