@@ -16,24 +16,25 @@ const planType = (am) => {
     "2100": "B",
 
     "1204": "C",
-    "2074": "C", // Note: "2074" also appears in D
+    "1729": "C", // Note: "2074" also appears in D
     "2202": "C",
     "2625": "C",
 
     "1444": "D",
+    "2074":"D",
     "2643": "D",
     "3150": "D",
 
     "1926": "E",
     "2766": "E",
     "3524": "E",
-      "4200": "E",
+    "4200": "E",
   };
 
   return planMap[am] || null; // returns null if not found
 };
 
-const enrollmentForm = async (data) => {
+const tataAIGForm = async (data) => {
 
   const templatePdfPath = "./src/templates/enrollment.pdf"; // <== PDF template now
   const fontPath = "./src/fonts/NotoSans_ExtraCondensed-Regular.ttf";
@@ -167,8 +168,8 @@ const EData = {
   relationWithnominee:"father"
  
 };
-// enrollmentForm(EData)
+// tataAIGForm(EData)
 
 // Run test
 
-export { enrollmentForm };
+export { tataAIGForm  };
