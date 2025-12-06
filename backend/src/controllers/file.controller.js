@@ -1,4 +1,4 @@
-import { enrollmentForm } from "../pdfReader/TataAIG.js";
+import { tataAIGForm  } from "../pdfReader/TataAIG.js";
 import { drfForm } from "../pdfReader/drf.js";
 import { applicationForm } from "../pdfReader/app.js";
 import {User} from "../model/user.model.js"
@@ -81,7 +81,7 @@ const generatePdf = async (req, res) => {
     await Promise.all([
       applicationForm(appData),
       drfForm(drfData),
-      enrollmentForm(enrollmentData),
+      tataAIGForm(enrollmentData),
     ]);
 
 
