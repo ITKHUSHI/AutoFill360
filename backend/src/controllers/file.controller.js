@@ -28,6 +28,7 @@ const generatePdf = async (req, res) => {
       ifscCode: bank.ifscCode || "",
       disbursementAmount: sanction.disbursement || "",
       insurance : sanction.insurance || "",
+      EMIDate: sanction.EMIDate || ""
     };
 
     // ---------------------------------------------

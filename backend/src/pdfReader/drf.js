@@ -72,6 +72,8 @@ const drfForm = async (data) => {
   page.drawText(data.appId || "", { x: 400, y: 711, size: fontSize, font, color: textColor });
   page.drawText(data.insurance || "", { x: 465, y:283, size: fontSize, font, color: textColor });
   page.drawText(String(data.loanAmount || ""), { x: 215, y: 688, size: fontSize, font, color: textColor });
+  page.drawText(data.insurance?"TATA AIG 912020044796381":"" ,{x:175,y:284,size:fontSize,font,color:textColor})
+  page.drawText(data.EMIDate||"" ,{x:430,y:265,size:fontSize,font,color:textColor})
 drawWrappedAmount(
   page,
   numberToINRWords(data.loanAmount) || "",
@@ -144,8 +146,10 @@ drawWrappedAmount(
 //   accountNo: "9834784687483",
 //   ifscCode: "SBIN409038778",
 //   insurance:"9632"
+
 // };
 
 // drfForm(sampleDrf);
 
 export { drfForm };
+

@@ -71,6 +71,7 @@ const parseSanctionText = (raw = "") => {
     insurance: find(/TATA\s*AIG\s*(?:INR|Rs\.?)?\s*([\d,]+)/i),
     mobile: find(/\b(\d{10})\b/),
     email: find(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,})/i),
+    EMIDate:"",
     
   };
 };
