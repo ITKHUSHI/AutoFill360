@@ -39,6 +39,13 @@ const BANK_HOLDERS = [
      bankName	:"ICICI BANK LTD",
      ifscCode	:"ICIC0007750",
      accountNumber:	"775005000135"
+  },
+  {
+     id:7,
+     beneficiaryName	:"KHANDELWAL AUTOCORP PVT LTD",
+     bankName	:"KOTAK MAHINDRA BANK",
+     ifscCode	:"KKBK0005933",
+     accountNumber:	"556044006931"
   }
  
 ];
