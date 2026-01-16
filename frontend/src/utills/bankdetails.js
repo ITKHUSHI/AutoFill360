@@ -46,7 +46,14 @@ const BANK_HOLDERS = [
      bankName	:"KOTAK MAHINDRA BANK",
      ifscCode	:"KKBK0005933",
      accountNumber:	"556044006931"
-  }
+  },
+  {
+     id:8,
+     beneficiaryName	:"PRIDE MOTORS",
+     bankName	:"IDFC FIRST BANK",
+     ifscCode	:"IDFB0041181",
+     accountNumber:	"10030561965"
+  },
  
 ];
 
