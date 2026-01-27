@@ -54,6 +54,20 @@ const BANK_HOLDERS = [
      ifscCode	:"IDFB0041181",
      accountNumber:	"10030561965"
   },
+  {
+     id:9,
+     beneficiaryName	:"SHYAM SANGAM AGENCIES",
+     bankName	:"AXIS BANK LTD",
+     ifscCode	:"UTIB0000043",
+     accountNumber:	"922030021942011"
+  },
+  {
+     id:10,
+     beneficiaryName	:"DUGAR DISTRIBUTORS PRIVATE LIMITED",
+     bankName	:"HDFC BANK LTD",
+     ifscCode	:"HDFC0000036",
+     accountNumber:	"00360350000424"
+  },
  
 ];
 
